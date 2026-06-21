@@ -350,7 +350,6 @@ static bool mapMatchesExpectations(const unique_fd& fd, const string& mapName,
 }
 
 static bool createMaps(const char* elfPath, ifstream& elfFile, vector<unique_fd>& mapFds) {
-    int ret;
     vector<char> mdData;
     vector<struct bpf_map_def> md;
     vector<string> mapNames;
@@ -424,7 +423,7 @@ static bool createMaps(const char* elfPath, ifstream& elfFile, vector<unique_fd>
             fd.reset(bpf(BPF_MAP_CREATE, req));
         }
 
-        if (!fd.ok()) return -saved_errno;
+        if (!fd.ok()) return false;
 
         // When reusing a pinned map, we need to check the map type/sizes/etc match, but for
         // safety (since reuse code path is rare) run these checks even if we just created it.

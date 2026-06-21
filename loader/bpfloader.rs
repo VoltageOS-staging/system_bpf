@@ -576,6 +576,17 @@ fn is_user_build() -> Result<bool, anyhow::Error> {
 }
 
 fn libbpf_worker(file_desc: &BpfFileDesc) -> Result<(), anyhow::Error> {
+    if let Err(e) = libbpf_worker_inner(file_desc) {
+        error!(
+            "BpfLoader: NON-FATAL failure loading {} (critical={}): {:#}",
+            file_desc.filename, file_desc.critical, e
+        );
+    }
+    Ok(())
+}
+
+fn libbpf_worker_inner(file_desc: &BpfFileDesc) -> Result<(), anyhow::Error> {
+
     info!("Loading {}", file_desc.filename);
     if file_desc.skip_on_user && is_user_build()? {
         info!("Skip loading {} on user build", file_desc.filename);
